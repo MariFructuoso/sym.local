@@ -8,6 +8,11 @@ class DefaultController extends AbstractController
 {
     public function index()
     {
-        return $this->render('prueba.html.twig');
+        $nombre = 'María';
+        $saludo = 'Buenos días';
+        return $this->render('prueba.html.twig', [
+            'nombre' => $nombre,
+            'saludo' => $saludo
+        ]);
     }
 }
