@@ -12,7 +12,6 @@
         {% endblock %}
     </head>
     <body>
-        <h1>Hola {{ nombre }}!!</h1>
-        <p>{{ saludo }}!!</p> 
+        {% include 'parts/nombres.part.html.twig' with {'nombres':nombres} %}
     </body>
 </html>

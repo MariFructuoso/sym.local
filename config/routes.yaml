@@ -3,9 +3,9 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
-indexPrueba:
-    path: /prueba
-    controller: App\Controller\DefaultController::index
-index:
-    path: /
-    controller: App\Controller\ProyectoController::index
+#indexPrueba:
+    #path: /prueba
+    #controller: App\Controller\DefaultController::index
+#index1:
+    #path: /uno
+    #controller: App\Controller\DefaultController::index1

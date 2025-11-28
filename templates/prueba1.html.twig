@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	Hola mundo!!!
+{% endblock %}
+
+{%block body %}
+	<nav>
+		<ul>
+			<li><ahref="{{path('index3')}}">Inicio</a></li>
+			<li><ahref="{{path('sym_index')}}">Proyecto</a></li>
+			<li><ahref="{{path('sym_about')}}">Acerca de...</a></li>
+		</ul>
+	</nav>
+{% endblock %}
