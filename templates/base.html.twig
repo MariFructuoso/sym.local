@@ -1,32 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>
-			{% block title %}
-				PhotographItem-Responsive Theme
-			{% endblock %}
-		</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{% block title %}Mi proyecto{% endblock %}</title>
 		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22
-		viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22> </text></svg>">
-		{% block stylesheets %}
-			<link
-			rel="stylesheet" type="text/css" href="{{ asset('/bootstrap/css/bootstrap.min.css') }}">
-			<link
-			rel="stylesheet" type="text/css" href="{{ asset('/css/style.css') }}">
-			<link
-			rel="stylesheet" type="text/css" href="{{ asset('/css/magnific-popup.css') }}">
-			<link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
-		{% endblock %}
-	</head>
-	<body>
+			viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22> </text></svg>">
+            {% block stylesheets %}
+              	<!-- Bootstrap core css -->
+  	            <link rel="stylesheet" type="text/css" href="{{ asset('/bootstrap/css/bootstrap.min.css') }}">
+  	            <!-- Bootstrap core css -->
+  	            <link rel="stylesheet" type="text/css" href="{{ asset('/css/style.css') }}">
+  	            <!-- Magnific-popup css -->
+  	            <link rel="stylesheet" type="text/css" href="{{ asset('/css/magnific-popup.css') }}">
+  	            <!-- Font Awesome icons -->
+  	            <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
+            {% endblock %}
+    </head>
+	<body id="page-top">
 		{% block navegacion %}
 			{% include 'navegacion.php' %}
 		{% endblock %}
 		{% block principal %}
-			
+			<header>
+				<h1>Web en mantenimiento</h1>
+			</header>
+			<main>
+				<p>Página no disponible momentáneamente.
+				</p>
+			</main>
+			<footer>
+				<p>
+					<small>Todos los derechos reservados</small>
+				</p>
+			</footer>
 		{% endblock %}
 		{% block footer %}
 			<footer>

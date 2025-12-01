@@ -4,10 +4,10 @@ use App\Entity\IEntity;
 
 class Imagen implements IEntity
 {
-    const RUTA_IMAGENES_PORTFOLIO = '/dwes.local/public/images/index/portfolio/';
-    const RUTA_IMAGENES_GALERIA = '/dwes.local/public/images/index/gallery/';
-    const RUTA_IMAGENES_CLIENTES = '/dwes.local/public/images/clients/';
-    const RUTA_IMAGENES_SUBIDAS = '/dwes.local/public/images/galeria/';
+    const RUTA_IMAGENES_PORTFOLIO = '/images/index/portfolio/';
+    const RUTA_IMAGENES_GALERIA = '/images/index/gallery/';
+    const RUTA_IMAGENES_CLIENTES = '/images/clients/';
+    const RUTA_IMAGENES_SUBIDAS = '/images/galeria/';
 
     /**
      * @var int

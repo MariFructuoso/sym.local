@@ -25,7 +25,7 @@ class ProyectoController extends AbstractController
         $imagenesHome[] = new Imagen('11.jpg', 'descripción imagen 11', 1, 46, 61, 135);
         $imagenesHome[] = new Imagen('12.jpg', 'descripción imagen 12', 1, 456, 610, 130);
 
-        return $this->render('imagenes.html.twig', [
+        return $this->render('index.html.twig', [
             'imagenes' => $imagenesHome
         ]);
     }
