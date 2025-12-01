@@ -2,26 +2,73 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>
-			{% block title %}Mi proyecto{% endblock %}
+			{% block title %}
+				PhotographItem-Responsive Theme
+			{% endblock %}
 		</title>
 		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22
-			viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22> </text></svg>"> {% block stylesheets %}{% endblock %}
-		</head>
-		<body>
-			{% block body %}
-				<header>
-					<h1>Prueba del uso de bloques</h1>
-				</header>
-				<main>
-					<p>Este es el contenido principal</p>
-				</main>
-				<footer>
-					<p>
-						<small>Todos los derechos reservados</small>
-					</p>
-				</footer>
-			{% endblock %}
-		</body>
-		{% block javascripts %}{% endblock %}
-	</html>
+		viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22> </text></svg>">
+		{% block stylesheets %}
+			<link
+			rel="stylesheet" type="text/css" href="{{ asset('/bootstrap/css/bootstrap.min.css') }}">
+			<link
+			rel="stylesheet" type="text/css" href="{{ asset('/css/style.css') }}">
+			<link
+			rel="stylesheet" type="text/css" href="{{ asset('/css/magnific-popup.css') }}">
+			<link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
+		{% endblock %}
+	</head>
+	<body>
+		{% block navegacion %}
+			{% include 'navegacion.php' %}
+		{% endblock %}
+		{% block principal %}
+			
+		{% endblock %}
+		{% block footer %}
+			<footer>
+				<div class="container text-muted text-center">
+					<ul class="list-inline social-buttons">
+						<li>
+							<a href="#">
+								<i class="fa fa-facebook sr-icons"></i>
+							</a>
+						</li>
+						<li>
+							<a href="#">
+								<i class="fa fa-twitter sr-icons"></i>
+							</a>
+						</li>
+						<li>
+							<a href="#">
+								<i class="fa fa-google-plus sr-icons"></i>
+							</a>
+						</li>
+					</ul>
+					<ul class="list-inline">
+						<li class="footer-number">
+							<i class="fa fa-phone sr-icons"></i>
+							(00228)92229954
+						</li>
+						<li>
+							<i class="fa fa-envelope sr-icons"></i>
+							kouvenceslas93@gmail.com
+						</li>
+					</ul>
+					<p>Photography Fanatic Template &copy; 2017</p>
+				</div>
+			</footer>
+		{% endblock %}
+		{% block javascript %}
+			<script type="text/javascript" src="{{ asset('/js/jquery.min.js') }}"></script>
+			<script type="text/javascript" src="{{ asset('/bootstrap/js/bootstrap.min.js') }}"></script>
+			<script type="text/javascript" src="{{ asset('/js/jquery.easing.min.js') }}"></script>
+			<script type="text/javascript" src="{{ asset('/js/jquery.magnific-popup.min.js') }}"></script>
+			<script type="text/javascript" src="{{ asset('/js/scrollreveal.min.js') }}"></script>
+			<script type="text/javascript" src="{{ asset('/js/script.js') }}"></script>
+		{% endblock %}
+	</body>
+</html>

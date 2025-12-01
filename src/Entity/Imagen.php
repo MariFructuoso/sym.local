@@ -1,6 +1,6 @@
 <?php
 namespace App\Entity;
-use App\entity\IEntity;
+use App\Entity\IEntity;
 
 class Imagen implements IEntity
 {
