@@ -1,0 +1,17 @@
+{# templates/imagen/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalle de la Imagen{% endblock %}
+
+{% block body %}
+    <h1>{{ imagen.nombre }}</h1>
+    
+    <div class="imagen-detalle">
+        <img src="{{ asset('images/' ~ imagen.nombre) }}" alt="{{ imagen.nombre }}" style="max-width: 500px;">
+        
+        <p><strong>ID:</strong> {{ imagen.id }}</p>
+        <p><strong>Descripción:</strong> {{ imagen.descripcion }}</p>
+    </div>
+
+    <a href="{{ path('app_imagen_index') }}">Volver al listado</a>
+{% endblock %}
