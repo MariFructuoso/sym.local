@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class ImagenController extends AbstractController
+final class ImagenController1 extends AbstractController
 {
     #[Route('/imagen', name: 'app_imagen')]
     public function index(ManagerRegistry $doctrine): Response
