@@ -16,10 +16,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class ImagenController extends AbstractController
 {
     #[Route(name: 'app_imagen_index', methods: ['GET'])]
-    public function index(ImagenRepository $imagenRepository): Response
+    #[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
+    public function index(ImagenRepository $imagenRepository, string $ordenacion = 'id'): Response
     {
+        $imagenes = $imagenRepository->findBy([], [$ordenacion => 'asc']);
         return $this->render('imagen/index.html.twig', [
-            'imagens' => $imagenRepository->findAll(),
+            'imagens' => $imagenes
         ]);
     }
 
