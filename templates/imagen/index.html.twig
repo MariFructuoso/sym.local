@@ -30,6 +30,7 @@
 					<td>{{ imagen.numVisualizaciones }}</td>
 					<td>{{ imagen.numLikes }}</td>
 					<td>
+                    <a href="{{ path('app_imagen_delete_json', {'id': imagen.id}) }}" class="delete">borrar</a>
 						<a href="{{ path('app_imagen_show', {'id': imagen.id}) }}">show</a>
 						<a href="{{ path('app_imagen_edit', {'id': imagen.id}) }}">edit</a>
 					</td>

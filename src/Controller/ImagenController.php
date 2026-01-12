@@ -6,10 +6,11 @@ use App\Entity\Imagen;
 use App\Form\ImagenType;
 use App\Repository\ImagenRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/imagen')]
 final class ImagenController extends AbstractController
@@ -102,5 +103,12 @@ final class ImagenController extends AbstractController
         }
 
         return $this->redirectToRoute('app_imagen_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}', name: 'app_imagen_delete_json', methods: ['DELETE'])]
+    public function deleteJson(Imagen $imagen, ImagenRepository $imagenRepository): Response
+    {
+        $imagenRepository->remove($imagen, true);
+        return new JsonResponse(['eliminado' => true]);
     }
 }
