@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ImagenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ImagenRepository::class)]
 class Imagen
@@ -12,7 +13,7 @@ class Imagen
     const RUTA_IMAGENES_GALERIA = 'images/index/gallery/';
     const RUTA_IMAGENES_CLIENTES = 'images/clients/';
     const RUTA_IMAGENES_SUBIDAS = 'images/galeria/';
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,7 +37,7 @@ class Imagen
     #[ORM\Column]
     private ?int $numLikes = null;
 
-public function __construct($nombre = "", $descripcion = "", $categoria = 0, $numVisualizaciones = 0, $numLikes = 0, $numDownloads = 0)
+    public function __construct($nombre = "", $descripcion = "", $categoria = 0, $numVisualizaciones = 0, $numLikes = 0, $numDownloads = 0)
     {
         $this->id = null;
         $this->nombre = $nombre;
@@ -123,7 +124,7 @@ public function __construct($nombre = "", $descripcion = "", $categoria = 0, $nu
 
         return $this;
     }
-     public function getUrlPortfolio(): string
+    public function getUrlPortfolio(): string
     {
         return self::RUTA_IMAGENES_PORTFOLIO . $this->getNombre();
     }

@@ -5,7 +5,9 @@ namespace App\Form;
 use App\Entity\Imagen;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
@@ -15,14 +17,26 @@ class ImagenType extends AbstractType
     {
         $builder
             ->add(
-                'nombre', 
-                TextType::class,
+                'nombre',
+                FileType::class,
                 [
-                    'label' => 'Nombre: ',
-                    'required' => true,
-                    'label_attr' => ['class' => 'etiqueta']
+                    'label' => 'Nombre imagen (JPG o PNG)',
+                    'label_attr' => ['class' => 'etiqueta'],
+                    'mapped' => false,   
+                    'required' => false,
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '1024k',
+                            'mimeTypes' => [
+                                'image/jpeg',
+                                'image/png',
+                            ],
+                            'mimeTypesMessage' => 'Por favor, seleccione un archivo jpg o png',
+                        ])
+                    ],
                 ]
             )
+
             ->add(
                 'categoria',
                 NumberType::class,
@@ -30,7 +44,7 @@ class ImagenType extends AbstractType
                     'label' => 'Categoria',
                     'label_attr' => ['class' => 'etiqueta']
                 ]
-                )
+            )
             ->add(
                 'descripcion',
                 TextType::class,
@@ -39,23 +53,24 @@ class ImagenType extends AbstractType
                     'required' => false,
                     'label_attr' => ['class' => 'etiqueta']
                 ]
-                )
-            ->add('numDownloads',
-            NumberType::class,
-            [
-                'label' => 'Numero de descargas',
-                'label_attr' => ['class' => 'etiqueta']
-            ]
             )
-            
+            ->add(
+                'numDownloads',
+                NumberType::class,
+                [
+                    'label' => 'Numero de descargas',
+                    'label_attr' => ['class' => 'etiqueta']
+                ]
+            )
+
             ->add(
                 'numVisualizaciones',
                 NumberType::class,
                 [
-                    'label'=>'Número de visualizaciones',
+                    'label' => 'Número de visualizaciones',
                     'label_attr' => ['class' => 'etiqueta']
                 ]
-                )
+            )
             ->add(
                 'numLikes',
                 NumberType::class,
