@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Imagen;
+use App\Entity\Categoria;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType; 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -22,7 +24,7 @@ class ImagenType extends AbstractType
                 [
                     'label' => 'Nombre imagen (JPG o PNG)',
                     'label_attr' => ['class' => 'etiqueta'],
-                    'mapped' => false,   
+                    'mapped' => false,
                     'required' => false,
                     'constraints' => [
                         new File([
@@ -37,14 +39,9 @@ class ImagenType extends AbstractType
                 ]
             )
 
-            ->add(
-                'categoria',
-                NumberType::class,
-                [
-                    'label' => 'Categoria',
-                    'label_attr' => ['class' => 'etiqueta']
-                ]
-            )
+            ->add('categoria', EntityType::class, [
+                'class' => Categoria::class
+            ])
             ->add(
                 'descripcion',
                 TextType::class,

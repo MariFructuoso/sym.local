@@ -34,6 +34,10 @@ class Imagen
     #[ORM\Column]
     private ?int $numLikes = null;
 
+    #[ORM\ManyToOne(inversedBy: 'imagens', targetEntity: Categoria::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Categoria $categoria = null;
+
     public function __construct($nombre = "", $descripcion = "", $numVisualizaciones = 0, $numLikes = 0, $numDownloads = 0)
     {
         $this->id = null;
@@ -142,5 +146,17 @@ class Imagen
             'numLikes' => $this->getNumLikes(),
             'numDownloads' => $this->getNumDownloads()
         ];
+    }
+
+    public function getCategoria(): ?Categoria
+    {
+        return $this->categoria;
+    }
+
+    public function setCategoria(?Categoria $categoria): static
+    {
+        $this->categoria = $categoria;
+
+        return $this;
     }
 }
