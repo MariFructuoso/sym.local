@@ -19,15 +19,20 @@
 				<th>
 					<a href="{{ path("app_imagen_index_ordenado", {ordenacion: 'descripcion'}) }}">Descripcion</a>
 				</th>
-
-				<th>NumDownloads</th>
-				<th>NumVisualizaciones</th>
-				<th>NumLikes</th>
+				<th>
+					<a href="{{ path("app_imagen_index_ordenado", {ordenacion: 'numDownloads'}) }}">Número de descargas</a>
+				</th>
+				<th>
+					<a href="{{ path("app_imagen_index_ordenado", {ordenacion: 'numVisualizaciones'}) }}">Numero de visualizaciones</a>
+				</th>
+				<th>
+					<a href="{{ path("app_imagen_index_ordenado", {ordenacion: 'numLikes'}) }}">Numero de Likes</a>
+				</th>
 				<th>actions</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% for imagen in imagens %}
+			{% for imagen in imagenes %}
 				<tr>
 					<td>{{ imagen.id }}</td>
 					<td><img src="{{ asset(imagen.getUrlSubidas()) }}" alt="{{ imagen.nombre }}" width="100px"></td>

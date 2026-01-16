@@ -15,13 +15,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/imagen')]
 final class ImagenController extends AbstractController
 {
-    #[Route(name: 'app_imagen_index', methods: ['GET'])]
+    #[Route('/', name: 'app_imagen_index', methods: ['GET'])]
     #[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
-    public function index(ImagenRepository $imagenRepository, string $ordenacion = 'id'): Response
+    public function index(Request $requestStack, ImagenRepository $imagenRepository, string $ordenacion = null): Response
     {
-        $imagenes = $imagenRepository->findBy([], [$ordenacion => 'asc']);
+        if (!is_null($ordenacion)) { // Cuando se establece un tipo de ordenación específico
+            $tipoOrdenacion = 'asc'; // Por defecto si no se había guardado antes en la variable de sesión
+            $session = $requestStack->getSession(); // Abrir la sesión
+            $imagenesOrdenacion = $session->get('imagenesOrdenacion');
+            if (!is_null($imagenesOrdenacion)) { // Comprobamos si ya se había establecido un orden
+                if ($imagenesOrdenacion['ordenacion'] === $ordenacion) // Por si se ha cambiado de campo a ordenar
+                {
+                    if ($imagenesOrdenacion['tipoOrdenacion'] === 'asc')
+                        $tipoOrdenacion = 'desc';
+                }
+            }
+            $session->set('imagenesOrdenacion', [ // Se guarda la ordenación actual
+                'ordenacion' => $ordenacion,
+                'tipoOrdenacion' => $tipoOrdenacion
+            ]);
+        } else { // La primera vez que se entra se establece por defecto la ordenación por id ascendente
+            $ordenacion = 'id';
+            $tipoOrdenacion = 'asc';
+        }
+        $imagenes = $imagenRepository->findBy([], [$ordenacion => $tipoOrdenacion]);
         return $this->render('imagen/index.html.twig', [
-            'imagens' => $imagenes
+            'imagenes' => $imagenes
         ]);
     }
 
