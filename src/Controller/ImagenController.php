@@ -40,9 +40,23 @@ final class ImagenController extends AbstractController
         }
         $imagenes = $imagenRepository->findBy([], [$ordenacion => $tipoOrdenacion]);
         return $this->render('imagen/index.html.twig', [
-            'imagenes' => $imagenes
+            'imagens' => $imagenes
         ]);
     }
+
+    #[Route('/busqueda', name: 'app_imagen_index_busqueda', methods: ['POST'])]
+    public function busqueda(Request $request, ImagenRepository $imagenRepository): Response
+    {
+        $busqueda = $request->request->get('busqueda');
+
+        // Usamos la función que acabamos de crear en el repositorio
+        $imagenes = $imagenRepository->findLikeDescripcion($busqueda);
+
+        return $this->render('imagen/index.html.twig', [
+            'imagens' => $imagenes, // ¡Ojo! Mantén 'imagens' si así lo usas en tu twig
+        ]);
+    }
+
 
     #[Route('/new', name: 'app_imagen_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -72,6 +86,8 @@ final class ImagenController extends AbstractController
             'form' => $form,
         ]);
     }
+
+
 
     #[Route('/{id}', name: 'app_imagen_show', methods: ['GET'])]
     public function show(Imagen $imagen): Response

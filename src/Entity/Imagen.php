@@ -12,7 +12,7 @@ class Imagen
     const RUTA_IMAGENES_PORTFOLIO = 'images/index/portfolio/';
     const RUTA_IMAGENES_GALERIA = 'images/index/gallery/';
     const RUTA_IMAGENES_CLIENTES = 'images/clients/';
-    const RUTA_IMAGENES_SUBIDAS = 'images/galeria/';
+    const RUTA_IMAGENES_SUBIDAS = 'images/subidas/';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
