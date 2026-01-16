@@ -22,9 +22,6 @@ class Imagen
     #[ORM\Column(length: 50)]
     private ?string $nombre = null;
 
-    #[ORM\Column]
-    private ?int $categoria = null;
-
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $descripcion = null;
 
@@ -37,11 +34,10 @@ class Imagen
     #[ORM\Column]
     private ?int $numLikes = null;
 
-    public function __construct($nombre = "", $descripcion = "", $categoria = 0, $numVisualizaciones = 0, $numLikes = 0, $numDownloads = 0)
+    public function __construct($nombre = "", $descripcion = "", $numVisualizaciones = 0, $numLikes = 0, $numDownloads = 0)
     {
         $this->id = null;
         $this->nombre = $nombre;
-        $this->categoria = $categoria;
         $this->descripcion = $descripcion;
         $this->numVisualizaciones = $numVisualizaciones;
         $this->numLikes = $numLikes;
@@ -61,18 +57,6 @@ class Imagen
     public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getCategoria(): ?int
-    {
-        return $this->categoria;
-    }
-
-    public function setCategoria(int $categoria): static
-    {
-        $this->categoria = $categoria;
 
         return $this;
     }
@@ -154,7 +138,6 @@ class Imagen
         return [
             'nombre' => $this->getNombre(),
             'descripcion' => $this->getDescripcion(),
-            'categoria' => $this->getCategoria(),
             'numVisualizaciones' => $this->getNumVisualizaciones(),
             'numLikes' => $this->getNumLikes(),
             'numDownloads' => $this->getNumDownloads()
