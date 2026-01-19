@@ -75,4 +75,10 @@ class Categoria
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->nombre ?? ''; 
+        // Devuelve el nombre, o una cadena vacía si el nombre es null
+    }
 }

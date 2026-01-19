@@ -11,40 +11,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\BLL\ImagenBLL;
 
 #[Route('/imagen')]
 final class ImagenController extends AbstractController
 {
     #[Route('/', name: 'app_imagen_index', methods: ['GET'])]
-    #[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
-    public function index(Request $requestStack, ImagenRepository $imagenRepository, string $ordenacion = null): Response
-    {
-        if (!is_null($ordenacion)) { // Cuando se establece un tipo de ordenación específico
-            $tipoOrdenacion = 'asc'; // Por defecto si no se había guardado antes en la variable de sesión
-            $session = $requestStack->getSession(); // Abrir la sesión
-            $imagenesOrdenacion = $session->get('imagenesOrdenacion');
-            if (!is_null($imagenesOrdenacion)) { // Comprobamos si ya se había establecido un orden
-                if ($imagenesOrdenacion['ordenacion'] === $ordenacion) // Por si se ha cambiado de campo a ordenar
-                {
-                    if ($imagenesOrdenacion['tipoOrdenacion'] === 'asc')
-                        $tipoOrdenacion = 'desc';
-                }
-            }
-            $session->set('imagenesOrdenacion', [ // Se guarda la ordenación actual
-                'ordenacion' => $ordenacion,
-                'tipoOrdenacion' => $tipoOrdenacion
-            ]);
-        } else { // La primera vez que se entra se establece por defecto la ordenación por id ascendente
-            $ordenacion = 'id';
-            $tipoOrdenacion = 'asc';
-        }
-
-        $imagenes = $imagenRepository->findImagenesConCategoria($ordenacion, $tipoOrdenacion);
-        return $this->render('imagen/index.html.twig', [
-            'imagens' => $imagenes
-        ]);
-    }
-
+#[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
+public function index(
+ImagenBLL $imagenBLL,
+string $ordenacion=null): Response
+{
+$imagens = $imagenBLL->getImagenesConOrdenacion($ordenacion);
+return $this->render('imagen/index.html.twig', [
+'imagens' => $imagens
+]);
+}
+    
     #[Route('/busqueda', name: 'app_imagen_index_busqueda', methods: ['POST'])]
     public function busqueda(Request $request, ImagenRepository $imagenRepository): Response
     {
@@ -70,16 +53,27 @@ final class ImagenController extends AbstractController
             // $file almacena el archivo subido
             /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
             $file = $form['nombre']->getData();
-            // Generamos un nombre único
-            $fileName = md5(uniqid()) . '.' . $file->guessExtension();
-            // Move the file to the directory where brochures are stored
-            $file->move($this->getParameter('images_directory_subidas'), $fileName);
-            // Actualizamos el nombre del archivo en el objeto imagen al nuevo generado
-            $imagen->setNombre($fileName);
-            $entityManager->persist($imagen);
-            $entityManager->flush();
 
-            return $this->redirectToRoute('app_imagen_index', [], Response::HTTP_SEE_OTHER);
+            // --- CORRECCIÓN: Comprobamos si hay archivo antes de procesarlo ---
+            if ($file) {
+                // Generamos un nombre único
+                $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+                
+                // Movemos el archivo al directorio
+                $file->move($this->getParameter('images_directory_subidas'), $fileName);
+                
+                // Actualizamos el nombre en la entidad
+                $imagen->setNombre($fileName);
+                
+                // Solo persistimos si todo ha ido bien
+                $entityManager->persist($imagen);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_imagen_index', [], Response::HTTP_SEE_OTHER);
+            } else {
+                // Opcional: Si la imagen es obligatoria, puedes añadir un error al formulario aquí
+                // $form->get('nombre')->addError(new FormError('Debes subir una imagen'));
+            }
         }
 
         return $this->render('imagen/new.html.twig', [
