@@ -17,27 +17,33 @@ use App\BLL\ImagenBLL;
 final class ImagenController extends AbstractController
 {
     #[Route('/', name: 'app_imagen_index', methods: ['GET'])]
-#[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
-public function index(
-ImagenBLL $imagenBLL,
-string $ordenacion=null): Response
-{
-$imagens = $imagenBLL->getImagenesConOrdenacion($ordenacion);
-return $this->render('imagen/index.html.twig', [
-'imagens' => $imagens
-]);
-}
-    
+    #[Route('/orden/{ordenacion}', name: 'app_imagen_index_ordenado', methods: ['GET'])]
+    public function index(
+        ImagenBLL $imagenBLL,
+        string $ordenacion = null
+    ): Response {
+        $imagens = $imagenBLL->getImagenesConOrdenacion($ordenacion);
+        return $this->render('imagen/index.html.twig', [
+            'imagens' => $imagens
+        ]);
+    }
+
     #[Route('/busqueda', name: 'app_imagen_index_busqueda', methods: ['POST'])]
     public function busqueda(Request $request, ImagenRepository $imagenRepository): Response
     {
         $busqueda = $request->request->get('busqueda');
+        $fechaInicial = $request->request->get('fechaInicial');
+        $fechaFinal = $request->request->get('fechaFinal');
 
         // Usamos la función que acabamos de crear en el repositorio
-        $imagenes = $imagenRepository->findLikeDescripcion($busqueda);
+        $imagenes = $imagenRepository->findImagenes($busqueda, $fechaInicial, $fechaFinal);
 
         return $this->render('imagen/index.html.twig', [
-            'imagens' => $imagenes, // ¡Ojo! Mantén 'imagens' si así lo usas en tu twig
+            'imagens' => $imagenes,
+            // Pasamos los valores de vuelta para que se mantengan en los inputs
+            'busqueda' => $busqueda,
+            'fechaInicial' => $fechaInicial,
+            'fechaFinal' => $fechaFinal
         ]);
     }
 
@@ -58,16 +64,18 @@ return $this->render('imagen/index.html.twig', [
             if ($file) {
                 // Generamos un nombre único
                 $fileName = md5(uniqid()) . '.' . $file->guessExtension();
-                
+
                 // Movemos el archivo al directorio
                 $file->move($this->getParameter('images_directory_subidas'), $fileName);
-                
+
                 // Actualizamos el nombre en la entidad
                 $imagen->setNombre($fileName);
-                
+
                 // Solo persistimos si todo ha ido bien
                 $entityManager->persist($imagen);
                 $entityManager->flush();
+
+                $this->addFlash('mensaje', 'Se ha creado la imagen ' . $imagen->getNombre());
 
                 return $this->redirectToRoute('app_imagen_index', [], Response::HTTP_SEE_OTHER);
             } else {

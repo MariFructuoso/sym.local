@@ -7,10 +7,20 @@
 	<h1>Imagen index</h1>
 
 	<form action="{{ path('app_imagen_index_busqueda') }}" method="post">
-		<label>Búsqueda:</label>
-		<input type="text" name="busqueda" id="busqueda" value="">
-		<input type="submit" value="Buscar">
-	</form>
+    <label>Búsqueda:</label>
+    <input type="text" name="busqueda" id="busqueda" value="{{ busqueda|default('') }}">
+    <label>Desde:</label>
+    <input type="date" name="fechaInicial" id="fechaInicial" value="{{ fechaInicial|default('') }}">
+    <label>Hasta:</label>
+    <input type="date" name="fechaFinal" id="fechaFinal" value="{{ fechaFinal|default('') }}">
+    <input type="submit" value="Buscar">
+</form>
+
+{% for message in app.flashes('mensaje') %}
+    <div class="alert alert-primary" role="alert">
+        {{ message }}
+    </div>
+{% endfor %}
 
 	<table class="table">
 		<thead>
@@ -34,6 +44,7 @@
 				<th>
 					<a href="{{ path("app_imagen_index_ordenado", {ordenacion: 'numLikes'}) }}">Numero de Likes</a>
 				</th>
+				<th>Fecha</th>
 				<th>actions</th>
 			</tr>
 		</thead>
@@ -47,6 +58,7 @@
 					<td>{{ imagen.numDownloads }}</td>
 					<td>{{ imagen.numVisualizaciones }}</td>
 					<td>{{ imagen.numLikes }}</td>
+					<td>{{ imagen.fecha | date('d/m/Y') }}</td>
 					<td>
 						<a href="{{ path('app_imagen_delete_json', {'id': imagen.id}) }}" class="delete">borrar</a>
 						<a href="{{ path('app_imagen_show', {'id': imagen.id}) }}">show</a>
