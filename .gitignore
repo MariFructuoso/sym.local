@@ -11,3 +11,11 @@
 .idea/
 
 /public/images/*
+
+.DS_Store
+._ *
+Thumbs.db
+Desktop.ini
+
+/node_modules/
+/assets/vendor/
