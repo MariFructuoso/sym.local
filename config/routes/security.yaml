@@ -1,3 +1,18 @@
 _security_logout:
     resource: security.route_loader.logout
     type: service
+form_login:
+    login_path: app_login
+    check_path: app_login
+logout:
+    path: app_logout
+access_control:
+    # Necesario ROLE_ADMIN el acceso a /imagen*
+    - { path: ^/imagen/new, roles: ROLE_ADMIN }
+    - { path: ^/imagen/edit, roles: ROLE_ADMIN }
+    - { path: ^/imagen/delete, roles: ROLE_ADMIN }
+    - { path: ^/imagen, roles: ROLE_USER }
+    # allow unauthenticated users to access the login form
+    - { path: ^/register, roles: PUBLI_ACCESS }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }

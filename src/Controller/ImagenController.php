@@ -100,8 +100,7 @@ final class ImagenController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_imagen_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Imagen $imagen, EntityManagerInterface $entityManager): Response
+    #[Route('/edit/{id}', name: 'app_imagen_edit', methods: ['GET', 'POST'])]    public function edit(Request $request, Imagen $imagen, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ImagenType::class, $imagen);
         $form->handleRequest($request);
@@ -134,7 +133,7 @@ final class ImagenController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_imagen_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'app_imagen_delete', methods: ['POST'])]
     public function delete(Request $request, Imagen $imagen, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $imagen->getId(), $request->getPayload()->getString('_token'))) {
@@ -145,8 +144,7 @@ final class ImagenController extends AbstractController
         return $this->redirectToRoute('app_imagen_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}', name: 'app_imagen_delete_json', methods: ['DELETE'])]
-    public function deleteJson(Imagen $imagen, ImagenRepository $imagenRepository): Response
+    #[Route('/delete/json/{id}', name: 'app_imagen_delete_json', methods: ['DELETE'])]    public function deleteJson(Imagen $imagen, ImagenRepository $imagenRepository): Response
     {
         $imagenRepository->remove($imagen, true);
         return new JsonResponse(['eliminado' => true]);
