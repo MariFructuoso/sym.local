@@ -36,7 +36,7 @@ security:
         - { path: ^/imagen/edit, roles: ROLE_ADMIN }
         - { path: ^/imagen/delete, roles: ROLE_ADMIN }
         - { path: ^/imagen/busqueda, roles: ROLE_USER }
-        - { path: ^/register, roles: ROLE_ADMIN }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
         # allow unauthenticated users to access the login form
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }

@@ -4,18 +4,28 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
+    public function __construct(private EmailVerifier $emailVerifier)
+    {
+    }
+
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -25,21 +35,63 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // codificar la contraseña
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            // --- CAMBIO 1: Asignar ROLE_USER antes de guardar ---
             $user->setRoles(['ROLE_USER']);
-            
+
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
+            // generar url firmada y enviar email
+            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                (new TemplatedEmail())
+                    ->from(new Address('miwamiwa7797@gmail.com', 'mari'))
+                    ->to((string) $user->getEmail())
+                    // --- CAMBIO 2: Asunto en español ---
+                    ->subject('Por favor confirma tu correo electrónico')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
 
-            return $this->redirectToRoute('sym_index');
+            // Loguear automáticamente al usuario
+            return $security->login($user, 'form_login', 'main');
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
+    }
+
+    #[Route('/verify/email', name: 'app_verify_email')]
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
+    {
+        $id = $request->query->get('id');
+
+        if (null === $id) {
+            // Si no hay ID, redirigimos al registro
+            return $this->redirectToRoute('app_register');
+        }
+
+        $user = $userRepository->find($id);
+
+        if (null === $user) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        // validar el enlace de confirmación
+        try {
+            $this->emailVerifier->handleEmailConfirmation($request, $user);
+        } catch (VerifyEmailExceptionInterface $exception) {
+            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+
+            // Si falla, volvemos al login o registro
+            return $this->redirectToRoute('app_register');
+        }
+
+        // --- CAMBIO 3: Mensaje en español y redirección a login ---
+        $this->addFlash('success', '¡Tu correo ha sido verificado correctamente! Ya puedes iniciar sesión.');
+
+        return $this->redirectToRoute('app_login');
     }
 }
