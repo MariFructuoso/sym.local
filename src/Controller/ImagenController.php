@@ -132,6 +132,9 @@ final class ImagenController extends AbstractController
     #[Route('/delete/{id}', name: 'app_imagen_delete', methods: ['POST'])]
     public function delete(Request $request, Imagen $imagen, EntityManagerInterface $entityManager): Response
     {
+        // 1. Comprobación de seguridad
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         if ($this->isCsrfTokenValid('delete' . $imagen->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($imagen);
             $entityManager->flush();
@@ -143,6 +146,8 @@ final class ImagenController extends AbstractController
     #[Route('/delete/json/{id}', name: 'app_imagen_delete_json', methods: ['DELETE'])]
     public function deleteJson(Imagen $imagen, ImagenRepository $imagenRepository): Response
     {
+        // Comprobación de seguridad
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $imagenRepository->remove($imagen, true);
         return new JsonResponse(['eliminado' => true]);
     }
