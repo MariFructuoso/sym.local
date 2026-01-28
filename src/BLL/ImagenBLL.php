@@ -4,16 +4,24 @@ namespace App\BLL;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use App\Repository\ImagenRepository;
+use Symfony\Bundle\SecurityBundle\Security; // <--- 1. NUEVO: Importar Security
 
 class ImagenBLL
 {
     private RequestStack $requestStack;
     private ImagenRepository $imagenRepository;
+    private Security $security; // <--- 2. NUEVO: Propiedad para seguridad
 
-    public function __construct(RequestStack $requestStack, ImagenRepository $imagenRepository)
+    // 3. NUEVO: Inyectamos Security en el constructor
+    public function __construct(
+        RequestStack $requestStack, 
+        ImagenRepository $imagenRepository,
+        Security $security
+    )
     {
         $this->requestStack = $requestStack;
         $this->imagenRepository = $imagenRepository;
+        $this->security = $security;
     }
 
     public function getImagenesConOrdenacion(?string $ordenacion)
@@ -22,6 +30,7 @@ class ImagenBLL
             $tipoOrdenacion = 'asc'; // Por defecto si no se había guardado antes en la variable de sesión
             $session = $this->requestStack->getSession(); // Abrir la sesión
             $imagenesOrdenacion = $session->get('imagenesOrdenacion');
+            
             if (!is_null($imagenesOrdenacion)) { // Comprobamos si ya se había establecido un orden
                 if ($imagenesOrdenacion['ordenacion'] === $ordenacion) // Por si se ha cambiado de campo a ordenar
                 {
@@ -37,6 +46,15 @@ class ImagenBLL
             $ordenacion = 'id';
             $tipoOrdenacion = 'asc';
         }
-        return $this->imagenRepository->findImagenesConCategoria($ordenacion, $tipoOrdenacion);
+
+        // 4. NUEVO: Obtenemos el usuario logueado
+        $usuarioLogueado = $this->security->getUser();
+
+        // 5. NUEVO: Se lo pasamos al repositorio como tercer argumento
+        return $this->imagenRepository->findImagenesConCategoria(
+            $ordenacion, 
+            $tipoOrdenacion, 
+            $usuarioLogueado
+        );
     }
 }

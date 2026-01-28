@@ -36,9 +36,9 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # Necesario ROLE_ADMIN el acceso a /imagen*
-        - { path: ^/imagen/new, roles: ROLE_ADMIN }
-        - { path: ^/imagen/edit, roles: ROLE_ADMIN }
-        - { path: ^/imagen/delete, roles: ROLE_ADMIN }
+        - { path: ^/imagen/new, roles: ROLE_USER }
+        - { path: ^/imagen/edit, roles: ROLE_USER }
+        - { path: ^/imagen/delete, roles: ROLE_USER }
         - { path: ^/imagen/busqueda, roles: ROLE_USER }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         # allow unauthenticated users to access the login form

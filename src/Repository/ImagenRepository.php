@@ -3,9 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Imagen;
+use App\Entity\User; // <--- IMPORTANTE: Importar la entidad User
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Validator\Constraints\DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Imagen>
@@ -25,70 +26,70 @@ class ImagenRepository extends ServiceEntityRepository
         }
     }
 
-    //    /**
-    //     * @return Imagen[] Returns an array of Imagen objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Imagen
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Función privada para filtrar por usuario si no es ADMIN
+     */
+    private function addUserFilter(QueryBuilder $qb, ?User $usuario)
+    {
+        // Si hay usuario y NO es admin, aplicamos el filtro
+        if ($usuario && in_array('ROLE_ADMIN', $usuario->getRoles()) === false) {
+            $qb->andWhere('imagen.usuario = :usuario')
+               ->setParameter('usuario', $usuario);
+        }
+    }
 
     /**
-     * @return Imagen[] Returns an array of Imagen objects
+     * Búsqueda avanzada de imágenes
+     * He renombrado la función a plural 'findImagenes' y cambiado el alias 'i' por 'imagen'
      */
-
-    public function findImagen(string $descripcion, string $fechaInicial, $fechaFinal): array
+    public function findImagenes(?string $descripcion, ?string $fechaInicial, ?string $fechaFinal, ?User $usuario): array
     {
-        $qb = $this->createQueryBuilder('i');
+        // Usamos alias 'imagen' para ser consistentes con addUserFilter
+        $qb = $this->createQueryBuilder('imagen'); 
+
         if (!is_null($descripcion) && $descripcion !== '') {
             $qb->andWhere(
                 $qb->expr()->orX(
-                    $qb->expr()->like('i.descripcion', ':val'),
-                    $qb->expr()->like('i.nombre', ':val')
+                    $qb->expr()->like('imagen.descripcion', ':val'),
+                    $qb->expr()->like('imagen.nombre', ':val')
                 )
             )
-                ->setParameter('val', '%' . $descripcion . '%');
+            ->setParameter('val', '%' . $descripcion . '%');
         }
+
         if (!is_null($fechaInicial) && $fechaInicial !== '') {
-            //añadido "\" para que no de error
             $dtFechaInicial = \DateTime::createFromFormat('Y-m-d', $fechaInicial);
             $dtFechaInicial->setTime(0, 0, 0);
-            $qb->andWhere($qb->expr()->gte('i.fecha', ':fechaInicial'))
+            $qb->andWhere($qb->expr()->gte('imagen.fecha', ':fechaInicial'))
                 ->setParameter('fechaInicial', $dtFechaInicial);
         }
+
         if (!is_null($fechaFinal) && $fechaFinal !== '') {
             $dtFechaFinal = \DateTime::createFromFormat('Y-m-d', $fechaFinal);
             $dtFechaFinal->setTime(0, 0, 0);
-            $qb->andWhere($qb->expr()->lte('i.fecha', ':fechaFinal'))
+            $qb->andWhere($qb->expr()->lte('imagen.fecha', ':fechaFinal'))
                 ->setParameter('fechaFinal', $dtFechaFinal);
         }
+
+        // Aplicamos el filtro de seguridad
+        $this->addUserFilter($qb, $usuario);
 
         return $qb->getQuery()->getResult();
     }
 
-    public function findImagenesConCategoria(string $ordenacion, string $tipoOrdenacion)
+    /**
+     * Obtener imágenes con ordenación y categoría
+     */
+    public function findImagenesConCategoria(string $ordenacion, string $tipoOrdenacion, ?User $usuario)
     {
         $qb = $this->createQueryBuilder('imagen');
         $qb->addSelect('categoria')
             ->innerJoin('imagen.categoria', 'categoria')
             ->orderBy('imagen.' . $ordenacion, $tipoOrdenacion);
+        
+        // Aplicamos el filtro de seguridad
+        $this->addUserFilter($qb, $usuario);
+
         return $qb->getQuery()->getResult();
     }
 }
