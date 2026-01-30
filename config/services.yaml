@@ -23,5 +23,15 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    sym.bll.baseBLL:
+        class: App\BLL\BaseBLL
+        abstract: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@validator'
     sym.bll.ImagenBLL:
         class: App\BLL\ImagenBLL
+        parent: sym.bll.baseBLL
+        calls:
+            - setRequestStack: ['@Symfony\Component\HttpFoundation\RequestStack']
+            - setSecurity: ['@Symfony\Component\Security\Core\Security']

@@ -32,6 +32,9 @@ security:
             login_throttling:
                 max_attempts: 3          
                 interval: '10 minutes'
+        api:
+            pattern: ^/api
+            stateless: true 
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
@@ -41,7 +44,7 @@ security:
         # Dejamos entrar a todos los usuarios registrados, y luego en el Controlador
         # bloquearemos el 'delete' solo para admins.
         - { path: ^/imagen, roles: ROLE_USER }
-        
+        - { path: ^/api, roles: PUBLIC_ACCESS }
         # Rutas públicas
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
