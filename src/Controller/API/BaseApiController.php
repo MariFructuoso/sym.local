@@ -19,13 +19,15 @@ class BaseApiController extends AbstractController
     }
 
 
-    protected function getResponse(array $data, $statusCode = Response::HTTP_OK)
+    protected function getResponse(?array $data = null, $statusCode = Response::HTTP_OK)
     {
         $response = new JsonResponse();
+        
         if (!is_null($data)) {
-            $result['data'] = $data; // Siempre se debe devolver el resultado dentro de una clave
+            $result['data'] = $data; 
             $response->setContent(json_encode($result));
         }
+        
         $response->setStatusCode($statusCode);
         return $response;
     }

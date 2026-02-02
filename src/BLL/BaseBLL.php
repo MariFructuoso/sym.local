@@ -70,4 +70,22 @@ abstract class BaseBLL
         $this->em->flush();
         return $this->toArray($entity); // Devolvemos la entidad en forma de array
     }
+
+    // Genera un array de arrays con todas las entidades
+    public function entitiesToArray(array $entities)
+    {
+        if (is_null($entities))
+            return null;
+        $arr = [];
+        foreach ($entities as $entity)
+            $arr[] = $this->toArray($entity);
+        return $arr;
+    }
+
+    // Borra el registro
+    public function delete($entity)
+    {
+        $this->em->remove($entity);
+        $this->em->flush();
+    }
 }

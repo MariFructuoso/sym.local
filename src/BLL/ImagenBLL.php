@@ -2,14 +2,12 @@
 
 namespace App\BLL;
 
-
 use DateTime;
-use App\BLL\BaseBLL;
 use App\Entity\User;
 use App\Entity\Imagen;
 use App\Entity\Categoria;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Bundle\SecurityBundle\Security; // <--- 1. NUEVO: Importar Security
+use Symfony\Bundle\SecurityBundle\Security;
 
 class ImagenBLL extends BaseBLL
 {
@@ -21,54 +19,72 @@ class ImagenBLL extends BaseBLL
     {
         $this->security = $security;
     }
+
     public function getImagenesConOrdenacion(?string $ordenacion)
     {
-        if (!is_null($ordenacion)) { // Cuando se establece un tipo de ordenación específico
-            $tipoOrdenacion = 'asc'; // Por defecto si no se había guardado antes en la variable de sesión
-            $session = $this->requestStack->getSession(); // Abrir la sesión
+        if (!is_null($ordenacion)) {
+            $tipoOrdenacion = 'asc';
+            $session = $this->requestStack->getSession();
             $imagenesOrdenacion = $session->get('imagenesOrdenacion');
 
-            if (!is_null($imagenesOrdenacion)) { // Comprobamos si ya se había establecido un orden
-                if ($imagenesOrdenacion['ordenacion'] === $ordenacion) // Por si se ha cambiado de campo a ordenar
+            if (!is_null($imagenesOrdenacion)) {
+                if ($imagenesOrdenacion['ordenacion'] === $ordenacion)
                 {
                     if ($imagenesOrdenacion['tipoOrdenacion'] === 'asc')
                         $tipoOrdenacion = 'desc';
                 }
             }
-            $session->set('imagenesOrdenacion', [ // Se guarda la ordenación actual
+            $session->set('imagenesOrdenacion', [
                 'ordenacion' => $ordenacion,
                 'tipoOrdenacion' => $tipoOrdenacion
             ]);
-        } else { // La primera vez que se entra se establece por defecto la ordenación por id ascendente
+        } else {
             $ordenacion = 'id';
             $tipoOrdenacion = 'asc';
         }
 
-        // 4. NUEVO: Obtenemos el usuario logueado
         $usuarioLogueado = $this->security->getUser();
 
-        // 5. NUEVO: Se lo pasamos al repositorio como tercer argumento
         return $this->imagenRepository->findImagenesConCategoria(
             $ordenacion,
             $tipoOrdenacion,
             $usuarioLogueado
         );
     }
-    public function nueva(array $data)
+
+    // --- MÉTODOS DEL EJERCICIO API ---
+
+    public function getImagenes()
     {
-        $imagen = new Imagen();
+        $imagenes = $this->em->getRepository(Imagen::class)->findAll();
+        return $this->entitiesToArray($imagenes);
+    }
+
+    public function actualizaImagen(Imagen $imagen, array $data)
+    {
         $imagen->setNombre($data['nombre']);
         $imagen->setDescripcion($data['descripcion']);
         $imagen->setNumVisualizaciones($data['numVisualizaciones']);
         $imagen->setNumLikes($data['numLikes']);
         $imagen->setNumDownloads($data['numDownloads']);
-        // El id de la categoria, la tenemos que busar en su BBDD
+
+        // El id de la categoria
         $categoria = $this->em->getRepository(Categoria::class)->find($data['categoria']);
         $imagen->setCategoria($categoria);
+
         $fecha = DateTime::createFromFormat('d/m/Y', $data['fecha']);
         $imagen->setFecha($fecha);
+
         $usuario = $this->em->getRepository(User::class)->find($data['usuario']);
         $imagen->setUsuario($usuario);
+
         return $this->guardaValidando($imagen);
+    }
+
+    // Esta es la ÚNICA versión de nueva que debe haber (refactorizada)
+    public function nueva(array $data)
+    {
+        $imagen = new Imagen();
+        return $this->actualizaImagen($imagen, $data);
     }
 }
