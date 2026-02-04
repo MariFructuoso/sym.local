@@ -29,9 +29,15 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@validator'
+            - '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface' # El encoder va aquí (3º argumento)
+            - '@Symfony\Component\HttpFoundation\RequestStack'
+            - '@Symfony\Component\Security\Core\Security'
     sym.bll.ImagenBLL:
         class: App\BLL\ImagenBLL
         parent: sym.bll.baseBLL
         calls:
             - setRequestStack: ['@Symfony\Component\HttpFoundation\RequestStack']
             - setSecurity: ['@Symfony\Component\Security\Core\Security']
+    sym.bll.UsuarioBLL:
+        class: App\BLL\UsuarioBLL
+        parent: sym.bll.baseBLL
