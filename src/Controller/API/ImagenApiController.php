@@ -27,27 +27,33 @@ class ImagenApiController extends BaseApiController
         $imagen = $imagenBLL->nueva($data);
         return $this->getResponse($imagen, Response::HTTP_CREATED);
     }
-    #[Route('/imagenesapi/{id}', name: 'api_get_imagen', requirements: ['id'=>'\d+'], methods: ['GET'])]
+    #[Route('/imagenesapi/{id}', name: 'api_get_imagen', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function getOne(Imagen $imagen, ImagenBLL $imagenBLL)
     {
         return $this->getResponse($imagenBLL->toArray($imagen));
     }
 
     #[Route('/imagenesapi', name: 'api_get_imagenes', methods: ['GET'])]
-    public function getAll(Request $request, ImagenBLL $imagenBLL)
+    #[Route('/imagenesapi/ordenadas/{order}', name: 'api_get_imagenes_ordenadas', methods: ['GET'])]
+    public function getAll(Request $request, ImagenBLL $imagenBLL, $order = 'id')
     {
-        $imagenes = $imagenBLL->getImagenes();
+        $descripcion = $request->query->get('descripcion');
+        $fechaInicial = $request->query->get('fechaInicial');
+        $fechaFinal = $request->query->get('fechaFinal');
+
+        $imagenes = $imagenBLL->getImagenes($order, $descripcion, $fechaInicial, $fechaFinal);
+
         return $this->getResponse($imagenes);
     }
 
-    #[Route('/imagenesapi/{id}', name: 'api_delete_imagen', requirements: ['id'=>'\d+'], methods: ['DELETE'])]
+    #[Route('/imagenesapi/{id}', name: 'api_delete_imagen', requirements: ['id' => '\d+'], methods: ['DELETE'])]
     public function delete(Imagen $imagen, ImagenBLL $imagenBLL)
     {
         $imagenBLL->delete($imagen);
         return $this->getResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/imagenesapi/{id}', name: 'api_update_imagen', requirements: ['id'=>'\d+'], methods: ['PUT'])]
+    #[Route('/imagenesapi/{id}', name: 'api_update_imagen', requirements: ['id' => '\d+'], methods: ['PUT'])]
     public function update(Request $request, Imagen $imagen, ImagenBLL $imagenBLL)
     {
         $data = $this->getContent($request);

@@ -2,11 +2,12 @@
 
 namespace App\Repository;
 
+use DateTime;
 use App\Entity\Imagen;
-use App\Entity\User; // <--- IMPORTANTE: Importar la entidad User
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User; // <--- IMPORTANTE: Importar la entidad User
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Imagen>
@@ -34,19 +35,15 @@ class ImagenRepository extends ServiceEntityRepository
         // Si hay usuario y NO es admin, aplicamos el filtro
         if ($usuario && in_array('ROLE_ADMIN', $usuario->getRoles()) === false) {
             $qb->andWhere('imagen.usuario = :usuario')
-               ->setParameter('usuario', $usuario);
+                ->setParameter('usuario', $usuario);
         }
     }
 
-    /**
-     * Búsqueda avanzada de imágenes
-     * He renombrado la función a plural 'findImagenes' y cambiado el alias 'i' por 'imagen'
-     */
-    public function findImagenes(?string $descripcion, ?string $fechaInicial, ?string $fechaFinal, ?User $usuario): array
+    public function findImagenes(?string $order, ?string $descripcion = null, ?string $fechaInicial = null, ?string $fechaFinal = null, ?User $usuario = null): array
     {
-        // Usamos alias 'imagen' para ser consistentes con addUserFilter
-        $qb = $this->createQueryBuilder('imagen'); 
+        $qb = $this->createQueryBuilder('imagen');
 
+        // Filtro por Descripción o Nombre
         if (!is_null($descripcion) && $descripcion !== '') {
             $qb->andWhere(
                 $qb->expr()->orX(
@@ -54,25 +51,36 @@ class ImagenRepository extends ServiceEntityRepository
                     $qb->expr()->like('imagen.nombre', ':val')
                 )
             )
-            ->setParameter('val', '%' . $descripcion . '%');
+                ->setParameter('val', '%' . $descripcion . '%');
         }
 
+        // Filtro por Fecha Inicial
         if (!is_null($fechaInicial) && $fechaInicial !== '') {
-            $dtFechaInicial = \DateTime::createFromFormat('Y-m-d', $fechaInicial);
-            $dtFechaInicial->setTime(0, 0, 0);
-            $qb->andWhere($qb->expr()->gte('imagen.fecha', ':fechaInicial'))
-                ->setParameter('fechaInicial', $dtFechaInicial);
+            $dtFechaInicial = DateTime::createFromFormat('Y-m-d', $fechaInicial);
+            if ($dtFechaInicial) {
+                $qb->andWhere($qb->expr()->gte('imagen.fecha', ':fechaInicial'))
+                    ->setParameter('fechaInicial', $dtFechaInicial);
+            }
         }
 
+        // Filtro por Fecha Final
         if (!is_null($fechaFinal) && $fechaFinal !== '') {
-            $dtFechaFinal = \DateTime::createFromFormat('Y-m-d', $fechaFinal);
-            $dtFechaFinal->setTime(0, 0, 0);
-            $qb->andWhere($qb->expr()->lte('imagen.fecha', ':fechaFinal'))
-                ->setParameter('fechaFinal', $dtFechaFinal);
+            $dtFechaFinal = DateTime::createFromFormat('Y-m-d', $fechaFinal);
+            if ($dtFechaFinal) {
+                $qb->andWhere($qb->expr()->lte('imagen.fecha', ':fechaFinal'))
+                    ->setParameter('fechaFinal', $dtFechaFinal);
+            }
         }
 
-        // Aplicamos el filtro de seguridad
-        $this->addUserFilter($qb, $usuario);
+        // Filtro por Usuario
+        if (!is_null($usuario)) {
+            $this->addUserFilter($qb, $usuario);
+        }
+
+        // Ordenación
+        if (!is_null($order)) {
+            $qb->addOrderBy('imagen.' . $order, 'ASC');
+        }
 
         return $qb->getQuery()->getResult();
     }
@@ -86,7 +94,7 @@ class ImagenRepository extends ServiceEntityRepository
         $qb->addSelect('categoria')
             ->innerJoin('imagen.categoria', 'categoria')
             ->orderBy('imagen.' . $ordenacion, $tipoOrdenacion);
-        
+
         // Aplicamos el filtro de seguridad
         $this->addUserFilter($qb, $usuario);
 

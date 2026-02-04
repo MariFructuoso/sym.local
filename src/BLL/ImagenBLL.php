@@ -28,8 +28,7 @@ class ImagenBLL extends BaseBLL
             $imagenesOrdenacion = $session->get('imagenesOrdenacion');
 
             if (!is_null($imagenesOrdenacion)) {
-                if ($imagenesOrdenacion['ordenacion'] === $ordenacion)
-                {
+                if ($imagenesOrdenacion['ordenacion'] === $ordenacion) {
                     if ($imagenesOrdenacion['tipoOrdenacion'] === 'asc')
                         $tipoOrdenacion = 'desc';
                 }
@@ -52,11 +51,16 @@ class ImagenBLL extends BaseBLL
         );
     }
 
-    // --- MÉTODOS DEL EJERCICIO API ---
-
-    public function getImagenes()
+    public function getImagenes(?string $order, ?string $descripcion, ?string $fechaInicial, ?string $fechaFinal)
     {
-        $imagenes = $this->em->getRepository(Imagen::class)->findAll();
+        $imagenes = $this->em->getRepository(Imagen::class)->findImagenes(
+            $order, 
+            $descripcion, 
+            $fechaInicial, 
+            $fechaFinal, 
+            $usuario = null // Pasamos null explícitamente como indica el ejercicio
+        );
+        
         return $this->entitiesToArray($imagenes);
     }
 

@@ -16,3 +16,11 @@ Content-Type: application/json
 "usuario": "1",
 "fecha": "20/01/2024"
 }
+
+### GET para obtener todos los datos ordenados
+GET http://127.0.0.1:8000/api/imagenesapi/ordenadas/descripcion
+Content-Type: application/json
+
+### GET para obtener datos filtrados
+GET http://127.0.0.1:8000/api/imagenesapi/ordenadas/id?fechaInicial=2024-01-03&descripcion=imag
+Content-Type: application/json
